@@ -3,24 +3,31 @@ const app = express();
 const port = process.env.PORT || 5000;
 const cors = require("cors");
 const path = require("path");
-app.use(cors());
+const { getDatabase } = require("./database");
 
-app.get("/qr/:id", (req, res) => {
-    console.log(req.params.id);
+main();
+async function main() {
+    app.use(cors());
+    app.use(express.json());
 
-    // res.send({
-    //     success: true,
-    //     data: [],
-    // });
+    const database = await getDatabase();
+    app.post("/add_account", async (req, res) => {
+        let { name, surname, email, age } = req.body;
+        email = email.toLowerCase();
 
-    res.redirect("/register");
-});
+        if (!(await database.users.findOne({ email })))
+            await database.users.insertOne({ name, surname, email, age });
 
-app.use(express.static("public"));
-app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "public", "index.html"));
-});
+        res.send("Zaloguj się klikając w link wysłany na " + email);
+    });
 
-app.listen(port, () => {
-    console.log(`Server is up at port ${port}`);
-});
+    app.use(express.static("public"));
+
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname, "public", "index.html"));
+    });
+
+    app.listen(port, () => {
+        console.log(`Server is up at port ${port}`);
+    });
+}
