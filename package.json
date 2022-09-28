@@ -27,8 +27,10 @@
   },
   "dependencies": {
     "add": "^2.0.6",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "express": "^4.18.1",
+    "express-session": "^1.17.3",
     "mongodb": "^4.10.0",
     "prettier-plugin-svelte": "^2.7.1",
     "sirv-cli": "^2.0.0",
