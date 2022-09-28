@@ -17,12 +17,45 @@ async function main() {
 
     const database = await getDatabase();
 
+    app.get("/qr/:id", async (req, res) => {
+        let code;
+        if (ObjectId.isValid(req.params.id))
+            code = await database.codes.findOne({ _id: ObjectId(req.params.id) });
+
+        if (req.session.user && code) {
+            let codeExists = await database.users.findOne({
+                _id: ObjectId(req.session.user._id),
+                codes: { $all: [req.params.id] },
+            });
+
+            if (!codeExists) {
+                await database.users.updateOne(
+                    { _id: ObjectId(req.session.user._id) },
+                    { $push: { codes: req.params.id } }
+                );
+            }
+
+            res.redirect("/home");
+        } else {
+            res.redirect("/");
+        }
+    });
+
+    app.post("/points", async (req, res) => {
+        res.send(
+            (
+                await database.users.findOne({ _id: ObjectId(req.session.user._id) })
+            ).codes.length.toString()
+        );
+    });
+
     app.get("/login/:id", async (req, res) => {
-        let user
-        if(ObjectId.isValid(req.params.id)) user = await database.users.findOne({ _id: ObjectId(req.params.id) });
-        
-        if(user) {
-            req.session.user = user
+        let user;
+        if (ObjectId.isValid(req.params.id))
+            user = await database.users.findOne({ _id: ObjectId(req.params.id) });
+
+        if (user) {
+            req.session.user = user;
             res.redirect("/home");
         } else {
             res.redirect("/");
