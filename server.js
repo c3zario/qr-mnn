@@ -41,12 +41,43 @@ async function main() {
         }
     });
 
+    app.post("/all_codes", async (req, res) => {
+        console.log();
+        let list = [];
+        const allCodes = await (await database.codes.find()).toArray();
+        const userCodes = (await database.users.findOne({ _id: ObjectId(req.session.user._id) }))
+            .codes;
+        console.log(userCodes);
+        allCodes.forEach((code) => {
+            if (userCodes.find((codeId) => codeId == code._id.toString())) list.push(code.name);
+            else list.push("");
+        });
+        console.log(list);
+
+        res.send(list);
+    });
+
     app.post("/points", async (req, res) => {
         res.send(
             (
                 await database.users.findOne({ _id: ObjectId(req.session.user._id) })
             ).codes.length.toString()
         );
+    });
+
+    app.post("/position", async (req, res) => {
+        const users = await (
+            await database.users.find({ category: req.session.user.category })
+        ).toArray();
+        const userCodes = (await database.users.findOne({ _id: ObjectId(req.session.user._id) }))
+            .codes.length;
+
+        let position = 1;
+        users.forEach((user) => {
+            if (user.codes.length > userCodes) position++;
+        });
+
+        res.send([position, users.length]);
     });
 
     app.get("/login/:id", async (req, res) => {
@@ -62,6 +93,11 @@ async function main() {
         }
     });
 
+    app.get("/logout", async (req, res) => {
+        req.session.user = {};
+        res.redirect("/");
+    });
+
     app.get("/session", async (req, res) => {
         res.send(req.session.user ? req.session.user : {});
     });
@@ -71,7 +107,14 @@ async function main() {
         email = email.toLowerCase();
 
         if (!(await database.users.findOne({ email }))) {
-            let user = await database.users.insertOne({ name, surname, email, age });
+            let user = await database.users.insertOne({
+                name,
+                surname,
+                email,
+                age,
+                category: age < 13 ? 0 : 1,
+                codes: [],
+            });
             console.log("http://localhost:" + port + "/login/" + user.insertedId.toString());
         }
 

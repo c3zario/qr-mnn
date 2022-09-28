@@ -3,6 +3,7 @@
 
     import Register from "./Register.svelte";
     import Home from "./Home.svelte";
+    import Sponsors from "./Sponsors.svelte";
 
     export let session;
 </script>
@@ -20,11 +21,12 @@
     </Router>
 </main>
 
+<Sponsors />
+
 <style lang="scss">
     main {
-        text-align: center;
-        padding: 1em;
-        max-width: 240px;
-        margin: 0 auto;
+        flex: 1;
+		
+        padding: 16px 30px 0 30px;
     }
 </style>
