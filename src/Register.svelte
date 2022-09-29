@@ -236,14 +236,21 @@
 
                         border-radius: 15px 3px 3px 15px;
 
+                        display: flex;
+                        align-items: center;
+
                         border: none;
                         border: 1px solid #e5007e;
 
                         background-color: #2697d3;
 
+                        font-size: 20px;
+
                         color: white;
 
                         span {
+                            line-height: 1;
+                            font-size: 14px;
                             font-weight: bold;
                         }
                     }
