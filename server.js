@@ -1,6 +1,7 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const nodemailer = require("nodemailer");
 const app = express();
 const port = process.env.PORT || 5000;
 const cors = require("cors");
@@ -46,8 +47,8 @@ async function main() {
         const allCodes = await (await database.codes.find()).toArray();
         const userCodes = (await database.users.findOne({ _id: ObjectId(req.session.user._id) }))
             .codes;
-            
-        allCodes.forEach(code => {
+
+        allCodes.forEach((code) => {
             if (userCodes.find((codeId) => codeId == code.token)) list.push(code.name);
             else list.push("");
         });
@@ -113,6 +114,30 @@ async function main() {
                 category: age < 15 ? 0 : 1,
                 codes: [],
             });
+
+            await handleErrors(async () => {
+                await nodemailer
+                    .createTransport({
+                        sendmail: true,
+                        newline: "unix",
+                        path: "/usr/sbin/sendmail",
+                    })
+                    .sendMail({
+                        from: '"QRinator" wsb@spolka.zlo',
+                        to: email,
+                        subject: "Rejestracja konta",
+                        html: `
+                            <div style="padding: 15px; border-radius: 5px; background-color: #183A68; color: white; text-align: center">
+                                <span style="color: white">QRinator</span><br><br>
+                            
+                                <h3>Witaj ${name}</h3><br><br>
+                            
+                                <h4>Kliknij poniżej, aby się zalogować</h4><br>
+                                <a href="http://wsb.server702757.nazwa.pl/login/${user.insertedId.toString()}"><button style="border: none; padding: 10px 30px; border-radius: 5px; color: white; background-color: #E5007E;">Zaloguj się</button></a>
+                            </div>`,
+                    });
+            });
+
             console.log("http://localhost:" + port + "/login/" + user.insertedId.toString());
         }
 
@@ -128,4 +153,12 @@ async function main() {
     app.listen(port, () => {
         console.log(`Server is up at port ${port}`);
     });
+}
+
+async function handleErrors(callback) {
+    try {
+        await callback();
+    } catch (error) {
+        console.error(error instanceof Error ? error.message : error);
+    }
 }
