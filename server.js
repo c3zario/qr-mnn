@@ -17,21 +17,20 @@ async function main() {
 
     const database = await getDatabase();
 
-    app.get("/qr/:id", async (req, res) => {
-        let code;
-        if (ObjectId.isValid(req.params.id))
-            code = await database.codes.findOne({ _id: ObjectId(req.params.id) });
+    app.get("/qr/:token", async (req, res) => {
+        let token = req.params.token;
+        let code = await database.codes.findOne({ token });
 
         if (req.session.user && code) {
             let codeExists = await database.users.findOne({
                 _id: ObjectId(req.session.user._id),
-                codes: { $all: [req.params.id] },
+                codes: { $all: [token] },
             });
 
             if (!codeExists) {
                 await database.users.updateOne(
                     { _id: ObjectId(req.session.user._id) },
-                    { $push: { codes: req.params.id } }
+                    { $push: { codes: token } }
                 );
             }
 
@@ -42,17 +41,16 @@ async function main() {
     });
 
     app.post("/all_codes", async (req, res) => {
-        console.log();
         let list = [];
+
         const allCodes = await (await database.codes.find()).toArray();
         const userCodes = (await database.users.findOne({ _id: ObjectId(req.session.user._id) }))
             .codes;
-        console.log(userCodes);
-        allCodes.forEach((code) => {
-            if (userCodes.find((codeId) => codeId == code._id.toString())) list.push(code.name);
+            
+        allCodes.forEach(code => {
+            if (userCodes.find((codeId) => codeId == code.token)) list.push(code.name);
             else list.push("");
         });
-        console.log(list);
 
         res.send(list);
     });
@@ -112,7 +110,7 @@ async function main() {
                 surname,
                 email,
                 age,
-                category: age < 13 ? 0 : 1,
+                category: age < 15 ? 0 : 1,
                 codes: [],
             });
             console.log("http://localhost:" + port + "/login/" + user.insertedId.toString());

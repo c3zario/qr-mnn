@@ -45,7 +45,7 @@
         <div id="user_data">
             <div>{session.name} {session.surname}</div>
             <div>Email: <span>{session.email}</span></div>
-            <div>Kategoria wiekowa: <span>{session.category ? "13+" : "do 12 lat"}</span></div>
+            <div>Kategoria wiekowa: <span>{session.category ? "15+" : "do 15 lat"}</span></div>
         </div>
     </div>
 
