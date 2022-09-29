@@ -127,7 +127,9 @@
         }
 
         #position {
-            height: 50px;
+            padding-top: 16px;
+            padding-bottom: 16px;
+
             display: flex;
             align-items: center;
             justify-content: end;

@@ -13,7 +13,8 @@ body {
     display: flex;
     flex-flow: column;
 
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     margin: 0;
 
     font-family: Inter;
