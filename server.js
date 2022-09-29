@@ -12,9 +12,16 @@ const { getDatabase } = require("./database");
 main();
 async function main() {
     app.use(cookieParser());
-    app.use(session({ secret: "Shh, its a secret!" }));
+    app.use(
+        session({ secret: "Shh, its a secret!", cookie: { expires: new Date(253402300000000) } })
+    );
     app.use(cors());
     app.use(express.json());
+
+    app.get("/home", async (req, res, next) => {
+        if (req.session.user) next();
+        else res.redirect("/register");
+    });
 
     const database = await getDatabase();
 
@@ -34,11 +41,10 @@ async function main() {
                     { $push: { codes: token } }
                 );
             }
-
-            res.redirect("/home");
-        } else {
-            res.redirect("/");
         }
+
+        if (req.session.user) res.redirect("/home");
+        else res.redirect("/register");
     });
 
     app.post("/all_codes", async (req, res) => {
@@ -93,7 +99,8 @@ async function main() {
     });
 
     app.get("/logout", async (req, res) => {
-        req.session.user = {};
+        req.session.user = undefined;
+
         res.redirect("/");
     });
 

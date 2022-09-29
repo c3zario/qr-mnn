@@ -15,7 +15,7 @@
                 <div id="img" />
 
                 <div id="next">
-                    <Link to="register"
+                    <Link to={JSON.stringify(session) == "{}" ? "register" : "home"}
                         ><div type="submit">
                             <span>Weź udział w konkursie</span>&nbsp;&nbsp;&nbsp;>>>
                         </div></Link
