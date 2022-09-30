@@ -137,6 +137,25 @@ async function main() {
         }
     });
 
+    app.get("/add_qr", async (req, res) => {
+        if (req.session.admin) {
+            const rand = () => {
+                return Math.random().toString(36).substring(2);
+            };
+
+            const RandomToken = () => {
+                return rand() + rand();
+            };
+
+            let token = RandomToken();
+            await database.codes.insertOne({ token, name: "nowy kod" });
+
+            res.send("http://wsb.server702757.nazwa.pl/qr/" + token);
+        } else {
+            res.redirect("/");
+        }
+    });
+
     app.get("/logout", async (req, res) => {
         req.session.user = undefined;
 
