@@ -1,4 +1,6 @@
 const { MongoClient } = require("mongodb");
+const dotenv = require("dotenv");
+dotenv.config();
 
 async function getDatabase() {
     const databaseName = process.env.MONGODB_DATABASE ?? "mnn";

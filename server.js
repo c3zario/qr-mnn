@@ -2,6 +2,8 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const nodemailer = require("nodemailer");
+const dotenv = require("dotenv");
+dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 const cors = require("cors");
@@ -13,7 +15,12 @@ main();
 async function main() {
     app.use(cookieParser());
     app.use(
-        session({ secret: "Shh, its a secret!", cookie: { expires: new Date(253402300000000) } })
+        session({
+            secret: "Shh, its a secret!",
+            resave: true,
+            saveUninitialized: false,
+            cookie: { maxAge: 253402300000000 },
+        })
     );
     app.use(cors());
     app.use(express.json());
@@ -21,6 +28,11 @@ async function main() {
     app.get("/home", async (req, res, next) => {
         if (req.session.user) next();
         else res.redirect("/register");
+    });
+
+    app.get("/register", async (req, res, next) => {
+        if (req.session.user) res.redirect("/home");
+        else next();
     });
 
     const database = await getDatabase();
@@ -132,9 +144,10 @@ async function main() {
                     .sendMail({
                         from: '"QRinator" wsb@spolka.zlo',
                         to: email,
-                        subject: "Rejestracja konta",
+                        subject: "Link logujący",
                         html: `
                             <div style="padding: 15px; border-radius: 5px; background-color: #183A68; color: white; text-align: center">
+                                <img src="http://wsb.server702757.nazwa.pl/qr_logo.png" width="100" height="100" style="border-radius: 5px"><br>
                                 <span style="color: white">QRinator</span><br><br>
                             
                                 <h3>Witaj ${name}</h3><br><br>
