@@ -37,6 +37,33 @@ async function main() {
 
     const database = await getDatabase();
 
+    app.get("/admin/:password", async (req, res, next) => {
+        if (req.params.password === process.env.ADMIN_PASS) {
+            req.session.admin = true;
+            res.redirect("/admin");
+        } else {
+            res.redirect("/");
+        }
+    });
+
+    app.get("/admin", async (req, res, next) => {
+        if (req.session.admin) next();
+        else res.redirect("/");
+    });
+
+    app.post("/results", async (req, res, next) => {
+        let results = {};
+        let userNames = {};
+        let users = await database.users.find().toArray();
+
+        users.forEach((user) => {
+            results[user._id] = user.codes.length;
+            userNames[user._id] = user.name;
+        });
+
+        req.session.admin ? res.send([results, userNames]) : res.send();
+    });
+
     app.get("/qr/:token", async (req, res) => {
         let token = req.params.token;
         let code = await database.codes.findOne({ token });

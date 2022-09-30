@@ -34,13 +34,15 @@
             }, 100);
         }, 2000);
     });
+
+    let center = window.location.pathname == "/admin" ? "center" : "";
 </script>
 
 <div id="sponsors">
-    <div id="spons">
+    <div id="spons" class={center}>
         <img src="/organizers.png" alt="Organizatorzy" />
     </div>
-    <div id="part">
+    <div id="part" class={center}>
         <img src="/partners.png" alt="Partnerzy" />
     </div>
 </div>
@@ -52,5 +54,10 @@
         > div {
             overflow-x: scroll;
         }
+    }
+
+    .center {
+        display: flex;
+        justify-content: center;
     }
 </style>

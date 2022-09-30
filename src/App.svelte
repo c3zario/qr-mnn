@@ -3,6 +3,8 @@
 
     import Register from "./Register.svelte";
     import Home from "./Home.svelte";
+    import Admin from "./Admin.svelte";
+
     import Sponsors from "./Sponsors.svelte";
 
     export let session;
@@ -27,6 +29,10 @@
         <Route path="register" component={Register} />
         <Route path="home">
             <Home {session} />
+        </Route>
+
+        <Route path="admin">
+            <Admin />
         </Route>
     </Router>
 </main>
