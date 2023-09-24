@@ -1,11 +1,12 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const session = require("express-session");
+const cookieSession = require("cookie-session");
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
+const domain = process.env.DOMAIN || "http://localhost:" + port + "/";
 const cors = require("cors");
 const path = require("path");
 const { ObjectId } = require("mongodb");
@@ -15,11 +16,11 @@ main();
 async function main() {
     app.use(cookieParser());
     app.use(
-        session({
-            secret: "Shh, its a secret!",
-            resave: true,
-            saveUninitialized: false,
-            cookie: { maxAge: 253402300000000 },
+        cookieSession({
+            name: "session",
+            keys: ["key1"],
+
+            maxAge: 86400000, // 24 hours
         })
     );
     app.use(cors());
@@ -79,6 +80,10 @@ async function main() {
                     { _id: ObjectId(req.session.user._id) },
                     { $push: { codes: token } }
                 );
+
+                const allCodes = await (await database.codes.find()).toArray();
+                req.session.user.newCodeShow = true;
+                req.session.user.newCodeName = allCodes.find((code) => code.token == token).name;
             }
         }
 
@@ -150,7 +155,7 @@ async function main() {
             let token = RandomToken();
             await database.codes.insertOne({ token, name: "nowy kod" });
 
-            res.send("http://wsb.server702757.nazwa.pl/qr/" + token);
+            res.send(domain + "qr/" + token);
         } else {
             res.redirect("/");
         }
@@ -164,6 +169,12 @@ async function main() {
 
     app.get("/session", async (req, res) => {
         res.send(req.session.user ? req.session.user : {});
+    });
+
+    app.get("/newCodeDel", async (req, res) => {
+        req.session.user.newCodeShow = false;
+
+        res.send();
     });
 
     app.post("/add_account", async (req, res) => {
@@ -193,18 +204,18 @@ async function main() {
                         subject: "Link logujący",
                         html: `
                             <div style="padding: 15px; border-radius: 5px; background-color: #183A68; color: white; text-align: center">
-                                <img src="http://wsb.server702757.nazwa.pl/qr_logo.png" width="100" height="100" style="border-radius: 5px"><br>
+                                <img src="${domain}qr_logo.png" width="100" height="100" style="border-radius: 5px"><br>
                                 <span style="color: white">QRinator</span><br><br>
                             
                                 <h3>Witaj ${name}</h3><br><br>
                             
                                 <h4>Kliknij poniżej, aby się zalogować</h4><br>
-                                <a href="http://wsb.server702757.nazwa.pl/login/${user.insertedId.toString()}"><button style="border: none; padding: 10px 30px; border-radius: 5px; color: white; background-color: #E5007E;">Zaloguj się</button></a>
+                                <a href="${domain}login/${user.insertedId.toString()}"><button style="border: none; padding: 10px 30px; border-radius: 5px; color: white; background-color: #E5007E;">Zaloguj się</button></a>
                             </div>`,
                     });
             });
 
-            console.log("http://localhost:" + port + "/login/" + user.insertedId.toString());
+            console.log(domain + "login/" + user.insertedId.toString());
         }
 
         res.send("Zaloguj się klikając w link wysłany na " + email);

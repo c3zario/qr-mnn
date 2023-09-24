@@ -21,3 +21,7 @@ body {
 
     background-color: #183a68;
 }
+
+a {
+    text-decoration: none;
+}

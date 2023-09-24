@@ -1,4 +1,6 @@
 <script type="ts">
+    import ButtonMnn from "./ButtonMnn.svelte";
+
     let name: string, surname: string, email: string, age: number;
 
     let comment = "";
@@ -33,10 +35,10 @@
     </div>
 
     <div id="desc">
-        <span
-            >Zdobywaj punkty skanując kody QR ukryte na terenie całej uczelnii. Wygrywa posiadacz
-            największej ilości punktów.<br /><br />Powodzenia!</span
-        >
+        <span>
+            Zdobywaj punkty skanując kody QR ukryte na terenie całej uczelnii. Wygrywa posiadacz
+            największej ilości punktów.<br /><br />Powodzenia!
+        </span>
     </div>
 
     <div id="login">
@@ -69,8 +71,10 @@
                     <span>{errorAge}</span>
                 </div>
 
+                <ButtonMnn value="Wróć" link="/" back={true} />
+
                 <div id="submit">
-                    <button type="submit"><span>Utwórz konto</span>&nbsp;&nbsp;&nbsp;>>></button>
+                    <button type="submit"><span>Utwórz konto</span>&nbsp;&nbsp;&nbsp;»»»</button>
                 </div>
             {:else}
                 {comment}

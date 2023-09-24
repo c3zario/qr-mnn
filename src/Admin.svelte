@@ -80,7 +80,7 @@
 
             input {
                 border: 0;
-                width: 40px;
+                width: 60px;
 
                 border-radius: 3px;
 

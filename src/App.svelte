@@ -1,13 +1,20 @@
 <script type="ts">
     import { Router, Link, Route } from "svelte-routing";
 
+    import Template from "./Template.svelte";
+
     import Register from "./Register.svelte";
+
     import Home from "./Home.svelte";
+    import Scanner from "./Scanner.svelte";
+
     import Admin from "./Admin.svelte";
 
     import Sponsors from "./Sponsors.svelte";
 
     export let session;
+
+    let qrScanner;
 </script>
 
 <main>
@@ -17,18 +24,24 @@
                 <div id="img" />
 
                 <div id="next">
-                    <Link to={JSON.stringify(session) == "{}" ? "register" : "home"}
-                        ><div type="submit">
-                            <span>Weź udział w konkursie</span>&nbsp;&nbsp;&nbsp;>>>
-                        </div></Link
-                    >
+                    <Link to={JSON.stringify(session) == "{}" ? "register" : "home"}>
+                        <div>
+                            <span>Weź udział w konkursie</span>&nbsp;&nbsp;&nbsp;»»»
+                        </div>
+                    </Link>
                 </div>
             </div>
         </Route>
 
         <Route path="register" component={Register} />
         <Route path="home">
-            <Home {session} />
+            <Template {session} />
+            <Home {session} {qrScanner} />
+        </Route>
+
+        <Route path="scanner">
+            <Template {session} />
+            <Scanner bind:qrScanner />
         </Route>
 
         <Route path="admin">
@@ -71,10 +84,6 @@
                 display: flex;
                 align-items: center;
                 justify-content: end;
-
-                :global(a) {
-                    text-decoration: none;
-                }
 
                 div {
                     padding: 10px 20px;

@@ -1,17 +1,15 @@
 <script type="ts">
-    export let session;
+    import ButtonMnn from "./ButtonMnn.svelte";
 
-    let position: number[] = [];
-    async function GetPosition() {
-        const response = await fetch("/position", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-        position = await response.json();
+    export let session, qrScanner;
+
+    let codeShow = false;
+    if (session.newCodeShow) {
+        codeShow = true;
+        session.newCodeShow = false;
+        fetch("/newCodeDel");
     }
-    GetPosition();
+    if (qrScanner !== undefined) qrScanner.stop();
 
     let points = "0";
     async function GetPoints() {
@@ -39,22 +37,6 @@
 </script>
 
 <div id="home">
-    <div id="top">
-        <div id="logo"><div /></div>
-
-        <div id="user_data">
-            <div>{session.name} {session.surname}</div>
-            <div>Email: <span>{session.email}</span></div>
-            <div>Kategoria wiekowa: <span>{session.category ? "15+" : "do 15 lat"}</span></div>
-        </div>
-    </div>
-
-    <div id="position">
-        <span
-            >Masz <span>{position[0]}</span> miejsce spośród <span>{position[1]}</span> graczy</span
-        >
-    </div>
-
     <div id="codes">
         <div>Zdobyte kody: <span>{points}</span></div>
 
@@ -62,24 +44,25 @@
             {#each codes as code, key}
                 <div>
                     {#if code}
-                        <span style="color: white; font-weight: bold">{key + 1} {code}</span>
+                        <span class="active">
+                            {key + 1}
+
+                            {#if codeShow && session.newCodeName == code}
+                                <span>{code}</span>
+                            {:else}
+                                {code}
+                            {/if}
+                        </span>
                     {:else}
-                        <span style="color: #D9D9D9">{key + 1}</span>
+                        <span class="no_active">{key + 1}</span>
                     {/if}
                 </div>
             {/each}
         </div>
     </div>
 
-    <div
-        id="logout"
-        on:click={async () => {
-            fetch("/logout");
-            window.location.href = "/";
-        }}
-    >
-        wyloguj się
-    </div>
+    <ButtonMnn value="Wróć" link="/" back={true} />
+    <ButtonMnn value="Skanuj kod" link="scanner" />
 </div>
 
 <style lang="scss">
@@ -88,56 +71,6 @@
         position: relative;
 
         color: white;
-
-        #top {
-            display: flex;
-
-            #logo {
-                height: 60px;
-                width: 70px;
-
-                padding: 1px;
-
-                > div {
-                    height: 100%;
-                    width: 100%;
-
-                    background-image: url("/logo.png");
-                    background-repeat: no-repeat;
-                    background-position: center;
-                    background-size: 100%;
-                }
-            }
-
-            #user_data {
-                flex: 1;
-
-                display: flex;
-                flex-flow: column;
-                align-items: flex-end;
-
-                border-bottom: 1px solid white;
-
-                font-size: 14px;
-
-                span {
-                    font-weight: bold;
-                }
-            }
-        }
-
-        #position {
-            padding-top: 16px;
-            padding-bottom: 16px;
-
-            display: flex;
-            align-items: center;
-            justify-content: end;
-
-            > span > span {
-                font-weight: bold;
-            }
-        }
 
         #codes {
             margin-top: 20px;
@@ -150,7 +83,7 @@
 
                     font-size: 14px;
 
-                    span {
+                    > span {
                         font-weight: bold;
                     }
                 }
@@ -162,28 +95,20 @@
                     font-size: 12px;
 
                     line-height: 1.4;
+
+                    .active {
+                        font-weight: bold;
+
+                        > span {
+                            color: #26d36b;
+                        }
+                    }
+
+                    .no_active {
+                        color: #d9d9d9;
+                    }
                 }
             }
-        }
-
-        #logout {
-            position: absolute;
-            left: -57px;
-            bottom: 40px;
-
-            height: 26px;
-            width: 80px;
-
-            transform: rotate(270deg);
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border-radius: 0 0 3px 3px;
-
-            background-color: #2697d3;
-            font-size: 12px;
         }
     }
 </style>
