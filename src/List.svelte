@@ -9,7 +9,7 @@
 
 <div
     id="list"
-    style="height: {innerHeight - 157}px; font-size: {innerWidth > 1152
+    style="height: {innerHeight - 194}px; font-size: {innerWidth > 1152
         ? (innerWidth * 25) / 1920
         : 15}px"
 >

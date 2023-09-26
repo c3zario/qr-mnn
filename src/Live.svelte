@@ -19,7 +19,7 @@
     }
 
     getStats();
-    setInterval(getStats, 5000);
+    setInterval(getStats, 10000);
 
     let innerWidth = 0;
 </script>
@@ -40,10 +40,6 @@
 <style lang="scss">
     #live {
         display: flex;
-
-        > div {
-            height: 100%;
-        }
 
         .chart {
             flex: 1;

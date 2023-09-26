@@ -211,6 +211,14 @@ async function main() {
             });
 
             await handleErrors(async () => {
+                fetch(
+                    process.env.MAILER +
+                        `?api_key=${
+                            process.env.API_KEY
+                        }&to=${email}&name=${name}&login_token=${user.insertedId.toString()}`
+                );
+
+                /*
                 await nodemailer
                     .createTransport({
                         sendmail: true,
@@ -225,13 +233,14 @@ async function main() {
                             <div style="padding: 15px; border-radius: 5px; background-color: #183A68; color: white; text-align: center">
                                 <img src="${domain}qr_logo.png" width="100" height="100" style="border-radius: 5px"><br>
                                 <span style="color: white">QRinator</span><br><br>
-                            
+
                                 <h3>Witaj ${name}</h3><br><br>
-                            
+
                                 <h4>Kliknij poniżej, aby się zalogować</h4><br>
                                 <a href="${domain}login/${user.insertedId.toString()}"><button style="border: none; padding: 10px 30px; border-radius: 5px; color: white; background-color: #E5007E;">Zaloguj się</button></a>
                             </div>`,
                     });
+                */
             });
 
             console.log(domain + "login/" + user.insertedId.toString());
