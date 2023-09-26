@@ -1,5 +1,5 @@
 <script type="ts">
-    import Chart from "./Chart.svelte";
+    import ChartAdmin from "./ChartAdmin.svelte";
 
     let labels = [];
     let value = [];
@@ -51,7 +51,7 @@
 <div id="admin">
     {#if labels[0]}
         <div>
-            <Chart {labels} {value} />
+            <ChartAdmin {labels} {value} />
         </div>
     {/if}
 

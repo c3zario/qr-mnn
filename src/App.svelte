@@ -10,6 +10,8 @@
 
     import Admin from "./Admin.svelte";
 
+    import Live from "./Live.svelte";
+
     import Sponsors from "./Sponsors.svelte";
 
     export let session;
@@ -18,93 +20,107 @@
 </script>
 
 <main>
-    <Router>
-        <Route>
-            <div id="start">
-                <div id="img" />
+    <div id="all">
+        <Router>
+            <Route>
+                <div id="start">
+                    <div id="img" />
 
-                <div id="next">
-                    <Link to={JSON.stringify(session) == "{}" ? "register" : "home"}>
-                        <div>
-                            <span>Weź udział w konkursie</span>&nbsp;&nbsp;&nbsp;»»»
-                        </div>
-                    </Link>
+                    <div id="next">
+                        <Link to={JSON.stringify(session) == "{}" ? "register" : "home"}>
+                            <div>
+                                <span>Weź udział w konkursie</span>&nbsp;&nbsp;&nbsp;»»»
+                            </div>
+                        </Link>
+                    </div>
                 </div>
-            </div>
-        </Route>
+            </Route>
 
-        <Route path="register" component={Register} />
-        <Route path="home">
-            <Template {session} />
-            <Home {session} {qrScanner} />
-        </Route>
+            <Route path="register" component={Register} />
+            <Route path="home">
+                <Template {session} />
+                <Home {session} {qrScanner} />
+            </Route>
 
-        <Route path="scanner">
-            <Template {session} />
-            <Scanner bind:qrScanner />
-        </Route>
+            <Route path="scanner">
+                <Template {session} />
+                <Scanner bind:qrScanner />
+            </Route>
 
-        <Route path="admin">
-            <Admin />
-        </Route>
-    </Router>
+            <Route path="admin">
+                <Admin />
+            </Route>
+
+            <Route path="live">
+                <Live />
+            </Route>
+        </Router>
+    </div>
+    <div id="sponsors">
+        <Sponsors />
+    </div>
 </main>
-
-<Sponsors />
 
 <style lang="scss">
     main {
-        flex: 1;
+        height: 100%;
 
         padding: 16px 30px 0 30px;
 
-        #start {
-            height: 100%;
+        display: flex;
+        flex-flow: column;
 
-            margin: 0 -30px -16px -30px;
+        #all {
+            flex: 1;
 
-            display: flex;
-            flex-flow: column;
+            #start {
+                height: 100%;
 
-            #img {
-                margin-top: -16px;
-
-                width: 100vw;
-                height: 550px;
-                background-image: url("/poster.png");
-                background-repeat: no-repeat;
-                background-size: cover;
-            }
-
-            #next {
-                flex: 1;
-
-                min-height: 100px;
+                margin: 0 -30px -16px -30px;
 
                 display: flex;
-                align-items: center;
-                justify-content: end;
+                flex-flow: column;
 
-                div {
-                    padding: 10px 20px;
+                #img {
+                    margin-top: -16px;
 
-                    border-radius: 15px 0 0 15px;
+                    width: 100vw;
+                    height: 550px;
+                    background-image: url("/poster.png");
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                }
+
+                #next {
+                    flex: 1;
+
+                    min-height: 100px;
 
                     display: flex;
                     align-items: center;
+                    justify-content: end;
 
-                    border: 1px solid #e5007e;
-                    border-right: 0;
+                    div {
+                        padding: 10px 20px;
 
-                    background-color: #2697d3;
+                        border-radius: 15px 0 0 15px;
 
-                    font-size: 20px;
+                        display: flex;
+                        align-items: center;
 
-                    color: white;
+                        border: 1px solid #e5007e;
+                        border-right: 0;
 
-                    span {
-                        font-size: 16px;
-                        font-weight: bold;
+                        background-color: #2697d3;
+
+                        font-size: 20px;
+
+                        color: white;
+
+                        span {
+                            font-size: 16px;
+                            font-weight: bold;
+                        }
                     }
                 }
             }

@@ -177,6 +177,25 @@ async function main() {
         res.send();
     });
 
+    app.post("/getStats", async (req, res) => {
+        const allCodes = await database.codes.find().toArray();
+        const allUsers = await database.users.find().toArray();
+
+        let stats = [[], [[], []]];
+
+        allUsers.forEach((user) => {
+            stats[0].push([user.codes.length, user.name]);
+        });
+        stats[0].sort((a, b) => b[0] - a[0]);
+
+        allCodes.forEach((code, key) => {
+            stats[1][0].push(key + 1);
+            stats[1][1].push(allUsers.filter((user) => user.codes.includes(code.token)).length);
+        });
+
+        res.send(stats);
+    });
+
     app.post("/add_account", async (req, res) => {
         let { name, surname, email, age } = req.body;
         email = email.toLowerCase();

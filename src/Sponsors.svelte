@@ -1,63 +1,55 @@
 <script type="ts">
     import { onMount } from "svelte";
 
+    let spons: HTMLDivElement;
     onMount(() => {
         setTimeout(() => {
-            let spons = document.getElementById("spons");
-            let maxSpons = spons.scrollWidth - spons.clientWidth;
+            let leftSpons = 0,
+                direction = 1;
 
-            let leftSpons = 0;
-            let direction = 1;
             setInterval(() => {
                 leftSpons = spons.scrollLeft + direction;
 
                 if (leftSpons < 0) direction = 1;
-                if (leftSpons > maxSpons) direction = -1;
+                if (leftSpons > spons.scrollWidth - spons.clientWidth) direction = -1;
 
                 spons.scroll(leftSpons, 0);
             }, 100);
         }, 2000);
-
-        setTimeout(() => {
-            let part = document.getElementById("part");
-            let maxPart = part.scrollWidth - part.clientWidth;
-
-            let leftPart = 0;
-            let direction = 1;
-            setInterval(() => {
-                leftPart = part.scrollLeft + direction;
-
-                if (leftPart < 0) direction = 1;
-                if (leftPart > maxPart) direction = -1;
-
-                part.scroll(leftPart, 0);
-            }, 100);
-        }, 2000);
     });
 
-    let center = window.location.pathname == "/admin" ? "center" : "";
+    let innerWidth = 0;
+
+    let isLive = innerWidth >= 746 && window.location.pathname == "/live";
 </script>
 
-<div id="sponsors">
-    <div id="spons" class={center}>
+<svelte:window bind:innerWidth />
+
+<div id="sponsors" class={isLive ? "live" : ""} style="width: {innerWidth - (isLive ? 60 : 0)}px">
+    <div bind:this={spons}>
         <img src="/organizers.png" alt="Organizatorzy" />
-    </div>
-    <div id="part" class={center}>
-        <img src="/partners.png" alt="Partnerzy" />
     </div>
 </div>
 
 <style lang="scss">
     #sponsors {
+        margin-left: -30px;
+
+        display: flex;
+        justify-content: center;
+
+        border-radius: 5px;
+
         background-color: white;
 
         > div {
             overflow-x: scroll;
+
+            border-radius: 5px;
         }
     }
 
-    .center {
-        display: flex;
-        justify-content: center;
+    .live {
+        margin: 30px 30px 16px 0 !important;
     }
 </style>

@@ -22,12 +22,9 @@
         ChartDataLabels
     );
 
-    export let labels: string[], value: string[];
+    export let labels, value;
 
-    let reverseAxis = false;
-
-    let data: any;
-    $: data = {
+    let data = {
         labels,
         datasets: [
             {
@@ -40,33 +37,24 @@
         ],
     };
 
-    let options: any;
-    $: options = {
-        indexAxis: reverseAxis ? "y" : "x",
+    const options = {
         responsive: true,
         scales: {
-            [reverseAxis ? "y" : "x"]: {
+            x: {
+                min: 0,
+                max: 20,
                 ticks: {
-                    minTicksLimit: 30,
-                    maxRotation: 0,
                     color: "white",
-                    font: {
-                        size: 25,
-                    },
                 },
                 grid: {
                     color: "#FFFFFF00",
                 },
             },
-            [reverseAxis ? "x" : "y"]: {
+            y: {
+                min: 0,
+                max: 50,
                 ticks: {
                     color: "white",
-                    font: {
-                        size: 25,
-                    },
-                    callback: function (value: any) {
-                        if (value % 1 === 0) return value;
-                    },
                 },
                 grid: {
                     color: "rgba(255, 255, 255, 0.4)",
@@ -75,31 +63,30 @@
         },
         maintainAspectRatio: false,
         animation: {
-            duration: 0,
+            duration: 5000,
         },
         plugins: {
             legend: {
                 display: false,
             },
             datalabels: {
-                display: false,
+                anchor: "end",
+                align: "top",
+                formatter: Math.round,
+                font: {
+                    weight: "bold",
+                    size: 20,
+                },
+                color: "white",
+            },
+        },
+        ticks: {
+            font: {
+                size: 20,
             },
         },
     };
-
-    let innerWidth;
-    $: reverseAxis = innerWidth < 746;
-
-    $: options.scales[reverseAxis ? "x" : "y"].ticks.font.size =
-        innerWidth > 1152 ? (innerWidth * 25) / 1920 : 15;
-    $: options.scales[reverseAxis ? "y" : "x"].ticks.font.size = reverseAxis
-        ? 15
-        : innerWidth > 768
-        ? (innerWidth * 22.5) / 1920
-        : 9;
 </script>
-
-<svelte:window bind:innerWidth />
 
 <div class="chart">
     <Bar {data} {options} />
@@ -107,8 +94,12 @@
 
 <style lang="scss">
     .chart {
-        height: 95%;
-        width: 95%;
+        height: 100%;
+        width: 100%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
         border-radius: 3px;
 
